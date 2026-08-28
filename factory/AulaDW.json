@@ -1,0 +1,15 @@
+{
+	"name": "AulaDW",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "brazilsouth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "360cdfad-bd81-4206-b585-6068b76a001b",
+		"tenantId": "11dbbfe2-89b8-4549-be10-cec364e59551"
+	}
+}
