@@ -5,7 +5,7 @@
 		"annotations": [],
 		"type": "SqlServer",
 		"typeProperties": {
-			"server": "cp2thais",
+			"server": "cp2dw",
 			"database": "dbusgs",
 			"encrypt": "mandatory",
 			"trustServerCertificate": false,
