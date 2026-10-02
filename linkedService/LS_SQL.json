@@ -5,7 +5,7 @@
 		"annotations": [],
 		"type": "SqlServer",
 		"typeProperties": {
-			"server": "cp2dw",
+			"server": "cp2dw.database.windows.net",
 			"database": "dbusgs",
 			"encrypt": "mandatory",
 			"trustServerCertificate": false,
