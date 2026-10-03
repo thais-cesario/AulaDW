@@ -1,0 +1,26 @@
+{
+	"name": "DS_SQL_DIM",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "REDE_SK",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CODIGO_REDE",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_REDE_SISMICA"
+		}
+	}
+}
