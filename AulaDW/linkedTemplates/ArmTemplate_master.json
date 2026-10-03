@@ -1,0 +1,147 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Nome do Data Factory",
+			"defaultValue": "AulaDW"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'connectionString' de 'AzureBlobStorage1'"
+		},
+		"GitHub1_credential": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'credential' de 'GitHub1'"
+		},
+		"HttpServer_DW_password": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'password' de 'HttpServer_DW'"
+		},
+		"LS_ADLS_accountKey": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'accountKey' de 'LS_ADLS'"
+		},
+		"LS_REST_USGS_password": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'password' de 'LS_REST_USGS'"
+		},
+		"LS_SQL_password": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'password' de 'LS_SQL'"
+		},
+		"GitHub1_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "thais-cesario"
+		},
+		"HttpServer_DW_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dummyjson.com/"
+		},
+		"HttpServer_DW_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "thais-cesario"
+		},
+		"LS_ADLS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://stusgsthaiscp2dw.dfs.core.windows.net/"
+		},
+		"LS_REST_USGS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://earthquake.usgs.gov/"
+		},
+		"LS_REST_USGS_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "cp2thais"
+		},
+		"LS_SQL_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "cp2dw.database.windows.net"
+		},
+		"LS_SQL_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "dbusgs"
+		},
+		"LS_SQL_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "cp2thais"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI para a conta de armazenamento contendo os modelos do ARM vinculados"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Token SAS para a conta de armazenamento contendo modelos do ARM vinculados"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "AulaDW_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStorage1_connectionString": {
+						"value": "[parameters('AzureBlobStorage1_connectionString')]"
+					},
+					"GitHub1_credential": {
+						"value": "[parameters('GitHub1_credential')]"
+					},
+					"HttpServer_DW_password": {
+						"value": "[parameters('HttpServer_DW_password')]"
+					},
+					"LS_ADLS_accountKey": {
+						"value": "[parameters('LS_ADLS_accountKey')]"
+					},
+					"LS_REST_USGS_password": {
+						"value": "[parameters('LS_REST_USGS_password')]"
+					},
+					"LS_SQL_password": {
+						"value": "[parameters('LS_SQL_password')]"
+					},
+					"GitHub1_properties_typeProperties_username": {
+						"value": "[parameters('GitHub1_properties_typeProperties_username')]"
+					},
+					"HttpServer_DW_properties_typeProperties_url": {
+						"value": "[parameters('HttpServer_DW_properties_typeProperties_url')]"
+					},
+					"HttpServer_DW_properties_typeProperties_userName": {
+						"value": "[parameters('HttpServer_DW_properties_typeProperties_userName')]"
+					},
+					"LS_ADLS_properties_typeProperties_url": {
+						"value": "[parameters('LS_ADLS_properties_typeProperties_url')]"
+					},
+					"LS_REST_USGS_properties_typeProperties_url": {
+						"value": "[parameters('LS_REST_USGS_properties_typeProperties_url')]"
+					},
+					"LS_REST_USGS_properties_typeProperties_userName": {
+						"value": "[parameters('LS_REST_USGS_properties_typeProperties_userName')]"
+					},
+					"LS_SQL_properties_typeProperties_server": {
+						"value": "[parameters('LS_SQL_properties_typeProperties_server')]"
+					},
+					"LS_SQL_properties_typeProperties_database": {
+						"value": "[parameters('LS_SQL_properties_typeProperties_database')]"
+					},
+					"LS_SQL_properties_typeProperties_userName": {
+						"value": "[parameters('LS_SQL_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
