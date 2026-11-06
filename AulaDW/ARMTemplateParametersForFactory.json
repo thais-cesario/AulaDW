@@ -23,6 +23,12 @@
 		"LS_SQL_password": {
 			"value": ""
 		},
+		"blob_gs_rm562987_connectionString": {
+			"value": ""
+		},
+		"sql_gs_562987_password": {
+			"value": ""
+		},
 		"GitHub1_properties_typeProperties_username": {
 			"value": "thais-cesario"
 		},
@@ -49,6 +55,15 @@
 		},
 		"LS_SQL_properties_typeProperties_userName": {
 			"value": "cp2thais"
+		},
+		"sql_gs_562987_properties_typeProperties_server": {
+			"value": "cp01thais.database.windows.net"
+		},
+		"sql_gs_562987_properties_typeProperties_database": {
+			"value": "db-citizentech_rm562987"
+		},
+		"sql_gs_562987_properties_typeProperties_userName": {
+			"value": "CloudSA162046d6"
 		}
 	}
 }

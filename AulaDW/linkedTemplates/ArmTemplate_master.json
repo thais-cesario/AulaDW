@@ -31,6 +31,14 @@
 			"type": "secureString",
 			"metadata": "Cadeia de caracteres segura para 'password' de 'LS_SQL'"
 		},
+		"blob_gs_rm562987_connectionString": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'connectionString' de 'blob_gs_rm562987'"
+		},
+		"sql_gs_562987_password": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'password' de 'sql_gs_562987'"
+		},
 		"GitHub1_properties_typeProperties_username": {
 			"type": "string",
 			"defaultValue": "thais-cesario"
@@ -66,6 +74,18 @@
 		"LS_SQL_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "cp2thais"
+		},
+		"sql_gs_562987_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "cp01thais.database.windows.net"
+		},
+		"sql_gs_562987_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "db-citizentech_rm562987"
+		},
+		"sql_gs_562987_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "CloudSA162046d6"
 		},
 		"containerUri": {
 			"type": "string",
@@ -112,6 +132,12 @@
 					"LS_SQL_password": {
 						"value": "[parameters('LS_SQL_password')]"
 					},
+					"blob_gs_rm562987_connectionString": {
+						"value": "[parameters('blob_gs_rm562987_connectionString')]"
+					},
+					"sql_gs_562987_password": {
+						"value": "[parameters('sql_gs_562987_password')]"
+					},
 					"GitHub1_properties_typeProperties_username": {
 						"value": "[parameters('GitHub1_properties_typeProperties_username')]"
 					},
@@ -138,10 +164,39 @@
 					},
 					"LS_SQL_properties_typeProperties_userName": {
 						"value": "[parameters('LS_SQL_properties_typeProperties_userName')]"
+					},
+					"sql_gs_562987_properties_typeProperties_server": {
+						"value": "[parameters('sql_gs_562987_properties_typeProperties_server')]"
+					},
+					"sql_gs_562987_properties_typeProperties_database": {
+						"value": "[parameters('sql_gs_562987_properties_typeProperties_database')]"
+					},
+					"sql_gs_562987_properties_typeProperties_userName": {
+						"value": "[parameters('sql_gs_562987_properties_typeProperties_userName')]"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "AulaDW_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'AulaDW_ArmTemplate_0')]"
+			]
 		}
 	]
 }

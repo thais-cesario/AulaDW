@@ -31,6 +31,14 @@
 			"type": "secureString",
 			"metadata": "Cadeia de caracteres segura para 'password' de 'LS_SQL'"
 		},
+		"blob_gs_rm562987_connectionString": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'connectionString' de 'blob_gs_rm562987'"
+		},
+		"sql_gs_562987_password": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'password' de 'sql_gs_562987'"
+		},
 		"GitHub1_properties_typeProperties_username": {
 			"type": "string",
 			"defaultValue": "thais-cesario"
@@ -66,6 +74,18 @@
 		"LS_SQL_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "cp2thais"
+		},
+		"sql_gs_562987_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "cp01thais.database.windows.net"
+		},
+		"sql_gs_562987_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "db-citizentech_rm562987"
+		},
+		"sql_gs_562987_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "CloudSA162046d6"
 		}
 	},
 	"variables": {
@@ -183,6 +203,41 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/blob_gs_rm562987')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('blob_gs_rm562987_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sql_gs_562987')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('sql_gs_562987_properties_typeProperties_server')]",
+					"database": "[parameters('sql_gs_562987_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('sql_gs_562987_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('sql_gs_562987_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_RAW_GEOJSON')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -190,6 +245,9 @@
 				"linkedServiceName": {
 					"referenceName": "LS_ADLS",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "aulas"
 				},
 				"annotations": [],
 				"type": "Json",
@@ -216,6 +274,9 @@
 					"referenceName": "LS_REST_USGS",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "aulas"
+				},
 				"annotations": [],
 				"type": "RestResource",
 				"typeProperties": {
@@ -235,6 +296,9 @@
 				"linkedServiceName": {
 					"referenceName": "LS_SQL",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "aulas"
 				},
 				"annotations": [],
 				"type": "SqlServerTable",
@@ -266,6 +330,9 @@
 				"linkedServiceName": {
 					"referenceName": "LS_SQL",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "aulas"
 				},
 				"annotations": [],
 				"type": "SqlServerTable",
@@ -328,342 +395,358 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DF_DIM_REDE')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/ds_csv_territorios')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "blob_gs_rm562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DS_RAW_GEOJSON",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DS_SQL_DIM",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "flatten1"
-						},
-						{
-							"name": "aggregate1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          bbox as double[],",
-						"          features as (geometry as (coordinates as double[], type as string), id as string, properties as (alert as string, cdi as double, code as string, detail as string, dmin as double, felt as short, gap as short, ids as string, mag as double, magType as string, mmi as double, net as string, nst as short, place as string, rms as double, sig as short, sources as string, status as string, time as long, title as string, tsunami as boolean, type as string, types as string, tz as string, updated as long, url as string), type as string)[],",
-						"          metadata as (api as string, count as short, generated as long, status as short, title as string, url as string),",
-						"          type as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'documentPerLine') ~> source1",
-						"source1 foldDown(unroll(features, features),",
-						"     mapColumn(",
-						"          geometry = features.geometry,",
-						"          id = features.id,",
-						"          properties = features.properties,",
-						"          type = features.type,",
-						"          CODIGO_REDE = features.properties.net",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> flatten1",
-						"flatten1 aggregate(groupBy(CODIGO_REDE),",
-						"     QTD_EVENTOS = count()) ~> aggregate1",
-						"aggregate1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          REDE_SK as integer,",
-						"          CODIGO_REDE as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     preSQLs:['DELETE FROM dbo.FATO_TERREMOTO; DELETE FROM dbo.DIM_REDE_SISMICA;'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          CODIGO_REDE",
-						"     )) ~> sink1"
-					]
-				}
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "territorios.csv",
+						"folderPath": "gs_rm562987",
+						"container": "citizentech"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "cod_territorio",
+						"type": "String"
+					},
+					{
+						"name": "nome_territorio",
+						"type": "String"
+					},
+					{
+						"name": "regiao",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_RAW_GEOJSON')]",
-				"[concat(variables('factoryId'), '/datasets/DS_SQL_DIM')]"
+				"[concat(variables('factoryId'), '/linkedServices/blob_gs_rm562987')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DF_FATO_TERREMOTO')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/ds_csv_servicos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "blob_gs_rm562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DS_RAW_GEOJSON",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "DS_SQL_DIM",
-								"type": "DatasetReference"
-							},
-							"name": "source2"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DS_SQL_FATO",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "flatten1"
-						},
-						{
-							"name": "lookup1"
-						},
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          bbox as double[],",
-						"          features as (geometry as (coordinates as double[], type as string), id as string, properties as (alert as string, cdi as double, code as string, detail as string, dmin as double, felt as short, gap as short, ids as string, mag as double, magType as string, mmi as double, net as string, nst as short, place as string, rms as double, sig as short, sources as string, status as string, time as long, title as string, tsunami as boolean, type as string, types as string, tz as string, updated as long, url as string), type as string)[],",
-						"          metadata as (api as string, count as short, generated as long, status as short, title as string, url as string),",
-						"          type as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'documentPerLine') ~> source1",
-						"source(output(",
-						"          REDE_SK as integer,",
-						"          CODIGO_REDE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source2",
-						"source1 foldDown(unroll(features, features),",
-						"     mapColumn(",
-						"          coordinates = features.geometry,",
-						"          id = features.id,",
-						"          mag = features.properties.mag,",
-						"          place = features.properties.place,",
-						"          time = features.properties.time,",
-						"          net = features.properties.net",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> flatten1",
-						"flatten1, source2 lookup(net == CODIGO_REDE,",
-						"     multiple: false,",
-						"     pickup: 'any',",
-						"     broadcast: 'auto')~> lookup1",
-						"lookup1 derive(DATA_HORA_UTC = toTimestamp(toLong(time)),",
-						"          LONGITUDE = toDecimal(coordinates.coordinates[1], 10, 6),",
-						"          LATITUDE = toDecimal(coordinates.coordinates[2], 10, 6),",
-						"          PROFUNDIDADE_KM = toDecimal(coordinates.coordinates[3], 10, 3)) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          EVENTO_SK as long,",
-						"          EVENTO_ID as string,",
-						"          REDE_SK as integer,",
-						"          DATA_HORA_UTC as timestamp,",
-						"          MAGNITUDE as decimal(6,2),",
-						"          PROFUNDIDADE_KM as decimal(10,3),",
-						"          LONGITUDE as decimal(10,6),",
-						"          LATITUDE as decimal(10,6),",
-						"          LOCAL_DESCRICAO as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          EVENTO_ID = id,",
-						"          REDE_SK,",
-						"          DATA_HORA_UTC,",
-						"          MAGNITUDE = mag,",
-						"          PROFUNDIDADE_KM,",
-						"          LONGITUDE,",
-						"          LATITUDE,",
-						"          LOCAL_DESCRICAO = place",
-						"     )) ~> sink1"
-					]
-				}
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "servicos.csv",
+						"folderPath": "gs_rm562987",
+						"container": "citizentech"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "cod_servico",
+						"type": "String"
+					},
+					{
+						"name": "nome_servico",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_RAW_GEOJSON')]",
-				"[concat(variables('factoryId'), '/datasets/DS_SQL_DIM')]",
-				"[concat(variables('factoryId'), '/datasets/DS_SQL_FATO')]"
+				"[concat(variables('factoryId'), '/linkedServices/blob_gs_rm562987')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_CP_USGS')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/ds_csv_canais')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
+				"linkedServiceName": {
+					"referenceName": "blob_gs_rm562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "canais.csv",
+						"folderPath": "gs_rm562987",
+						"container": "citizentech"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
 					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"paginationRules": {
-									"supportRFC5988": "true"
-								}
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings",
-									"filePattern": "setOfObjects"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_REST_USGS",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_RAW_GEOJSON",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+						"name": "cod_canal",
+						"type": "String"
 					},
 					{
-						"name": "Data flow1",
-						"description": "DF_DIM_REDE",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_DIM_REDE",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
+						"name": "nome_canal",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/blob_gs_rm562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_solicitacoes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "blob_gs_rm562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "solicitacoes.csv",
+						"folderPath": "gs_rm562987",
+						"container": "citizentech"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id_solicitacao",
+						"type": "String"
 					},
 					{
-						"name": "Data flow2",
-						"description": "DF_FATO_TERREMOTO",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Data flow1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_FATO_TERREMOTO",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"source2": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
+						"name": "cod_territorio",
+						"type": "String"
+					},
+					{
+						"name": "cod_servico",
+						"type": "String"
+					},
+					{
+						"name": "cod_canal",
+						"type": "String"
+					},
+					{
+						"name": "dt_abertura",
+						"type": "String"
+					},
+					{
+						"name": "dt_fechamento",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/blob_gs_rm562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_DimTerritorio')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "sk_territorio",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cod_territorio",
+						"type": "varchar"
+					},
+					{
+						"name": "nome_territorio",
+						"type": "nvarchar"
+					},
+					{
+						"name": "regiao",
+						"type": "nvarchar"
 					}
 				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "DimTerritorio"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_REST_USGS')]",
-				"[concat(variables('factoryId'), '/datasets/DS_RAW_GEOJSON')]",
-				"[concat(variables('factoryId'), '/dataflows/DF_DIM_REDE')]",
-				"[concat(variables('factoryId'), '/dataflows/DF_FATO_TERREMOTO')]"
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_DimServico')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "sk_servico",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cod_servico",
+						"type": "varchar"
+					},
+					{
+						"name": "nome_servico",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "DimServico"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_DimCanal')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "sk_canal",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cod_canal",
+						"type": "varchar"
+					},
+					{
+						"name": "nome_canal",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "DimCanal"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_DimTempo')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "data_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "data",
+						"type": "date"
+					},
+					{
+						"name": "ano",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "mes",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "dia",
+						"type": "tinyint",
+						"precision": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "DimTempo"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
 			]
 		}
 	]

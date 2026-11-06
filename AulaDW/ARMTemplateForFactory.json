@@ -31,6 +31,14 @@
 			"type": "secureString",
 			"metadata": "Cadeia de caracteres segura para 'password' de 'LS_SQL'"
 		},
+		"blob_gs_rm562987_connectionString": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'connectionString' de 'blob_gs_rm562987'"
+		},
+		"sql_gs_562987_password": {
+			"type": "secureString",
+			"metadata": "Cadeia de caracteres segura para 'password' de 'sql_gs_562987'"
+		},
 		"GitHub1_properties_typeProperties_username": {
 			"type": "string",
 			"defaultValue": "thais-cesario"
@@ -66,6 +74,18 @@
 		"LS_SQL_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "cp2thais"
+		},
+		"sql_gs_562987_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "cp01thais.database.windows.net"
+		},
+		"sql_gs_562987_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "db-citizentech_rm562987"
+		},
+		"sql_gs_562987_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "CloudSA162046d6"
 		}
 	},
 	"variables": {
@@ -219,6 +239,9 @@
 					"referenceName": "LS_ADLS",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "aulas"
+				},
 				"annotations": [],
 				"type": "Json",
 				"typeProperties": {
@@ -244,6 +267,9 @@
 					"referenceName": "LS_REST_USGS",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "aulas"
+				},
 				"annotations": [],
 				"type": "RestResource",
 				"typeProperties": {
@@ -263,6 +289,9 @@
 				"linkedServiceName": {
 					"referenceName": "LS_SQL",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "aulas"
 				},
 				"annotations": [],
 				"type": "SqlServerTable",
@@ -294,6 +323,9 @@
 				"linkedServiceName": {
 					"referenceName": "LS_SQL",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "aulas"
 				},
 				"annotations": [],
 				"type": "SqlServerTable",
@@ -470,6 +502,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "aulas"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -551,6 +586,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "aulas"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -664,6 +702,476 @@
 				"[concat(variables('factoryId'), '/datasets/DS_RAW_GEOJSON')]",
 				"[concat(variables('factoryId'), '/datasets/DS_SQL_DIM')]",
 				"[concat(variables('factoryId'), '/datasets/DS_SQL_FATO')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/blob_gs_rm562987')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('blob_gs_rm562987_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sql_gs_562987')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('sql_gs_562987_properties_typeProperties_server')]",
+					"database": "[parameters('sql_gs_562987_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('sql_gs_562987_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('sql_gs_562987_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_territorios')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "blob_gs_rm562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "territorios.csv",
+						"folderPath": "gs_rm562987",
+						"container": "citizentech"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "cod_territorio",
+						"type": "String"
+					},
+					{
+						"name": "nome_territorio",
+						"type": "String"
+					},
+					{
+						"name": "regiao",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/blob_gs_rm562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_servicos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "blob_gs_rm562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "servicos.csv",
+						"folderPath": "gs_rm562987",
+						"container": "citizentech"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "cod_servico",
+						"type": "String"
+					},
+					{
+						"name": "nome_servico",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/blob_gs_rm562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_canais')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "blob_gs_rm562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "canais.csv",
+						"folderPath": "gs_rm562987",
+						"container": "citizentech"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "cod_canal",
+						"type": "String"
+					},
+					{
+						"name": "nome_canal",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/blob_gs_rm562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_solicitacoes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "blob_gs_rm562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "solicitacoes.csv",
+						"folderPath": "gs_rm562987",
+						"container": "citizentech"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id_solicitacao",
+						"type": "String"
+					},
+					{
+						"name": "cod_territorio",
+						"type": "String"
+					},
+					{
+						"name": "cod_servico",
+						"type": "String"
+					},
+					{
+						"name": "cod_canal",
+						"type": "String"
+					},
+					{
+						"name": "dt_abertura",
+						"type": "String"
+					},
+					{
+						"name": "dt_fechamento",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/blob_gs_rm562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_DimTerritorio')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "sk_territorio",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cod_territorio",
+						"type": "varchar"
+					},
+					{
+						"name": "nome_territorio",
+						"type": "nvarchar"
+					},
+					{
+						"name": "regiao",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "DimTerritorio"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_DimServico')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "sk_servico",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cod_servico",
+						"type": "varchar"
+					},
+					{
+						"name": "nome_servico",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "DimServico"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_DimCanal')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "sk_canal",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cod_canal",
+						"type": "varchar"
+					},
+					{
+						"name": "nome_canal",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "DimCanal"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_DimTempo')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "data_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "data",
+						"type": "date"
+					},
+					{
+						"name": "ano",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "mes",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "dia",
+						"type": "tinyint",
+						"precision": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "DimTempo"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_FatoSolicitacao')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_gs_562987",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gs_562987"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "sk_fato_solicitacao",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "id_solicitacao",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sk_territorio",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sk_servico",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sk_canal",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "data_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "dt_abertura",
+						"type": "datetime2",
+						"scale": 0
+					},
+					{
+						"name": "dt_fechamento",
+						"type": "datetime2",
+						"scale": 0
+					},
+					{
+						"name": "status",
+						"type": "varchar"
+					},
+					{
+						"name": "qtd_solicitacoes",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "tempo_resolucao_horas",
+						"type": "decimal",
+						"precision": 12,
+						"scale": 2
+					}
+				],
+				"typeProperties": {
+					"schema": "gs_rm562987",
+					"table": "FatoSolicitacao"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
 			]
 		}
 	]
