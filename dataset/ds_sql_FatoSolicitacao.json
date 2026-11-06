@@ -1,0 +1,75 @@
+{
+	"name": "ds_sql_FatoSolicitacao",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_gs_562987",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gs_562987"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sk_fato_solicitacao",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "id_solicitacao",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sk_territorio",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sk_servico",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sk_canal",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "data_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dt_abertura",
+				"type": "datetime2",
+				"scale": 0
+			},
+			{
+				"name": "dt_fechamento",
+				"type": "datetime2",
+				"scale": 0
+			},
+			{
+				"name": "status",
+				"type": "varchar"
+			},
+			{
+				"name": "qtd_solicitacoes",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "tempo_resolucao_horas",
+				"type": "decimal",
+				"precision": 12,
+				"scale": 2
+			}
+		],
+		"typeProperties": {
+			"schema": "gs_rm562987",
+			"table": "FatoSolicitacao"
+		}
+	}
+}
