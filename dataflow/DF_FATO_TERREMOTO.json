@@ -1,6 +1,9 @@
 {
 	"name": "DF_FATO_TERREMOTO",
 	"properties": {
+		"folder": {
+			"name": "aulas"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

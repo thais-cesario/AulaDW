@@ -5,6 +5,9 @@
 			"referenceName": "LS_ADLS",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "aulas"
+		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {

@@ -5,6 +5,9 @@
 			"referenceName": "LS_SQL",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "aulas"
+		},
 		"annotations": [],
 		"type": "SqlServerTable",
 		"schema": [

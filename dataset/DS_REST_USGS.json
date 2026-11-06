@@ -5,6 +5,9 @@
 			"referenceName": "LS_REST_USGS",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "aulas"
+		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {

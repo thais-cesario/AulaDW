@@ -1,6 +1,9 @@
 {
 	"name": "DF_DIM_REDE",
 	"properties": {
+		"folder": {
+			"name": "aulas"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
