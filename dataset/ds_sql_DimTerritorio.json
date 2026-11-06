@@ -1,0 +1,37 @@
+{
+	"name": "ds_sql_DimTerritorio",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_gs_562987",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gs_562987"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sk_territorio",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cod_territorio",
+				"type": "varchar"
+			},
+			{
+				"name": "nome_territorio",
+				"type": "nvarchar"
+			},
+			{
+				"name": "regiao",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gs_rm562987",
+			"table": "DimTerritorio"
+		}
+	}
+}
