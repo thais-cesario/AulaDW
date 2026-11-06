@@ -1,0 +1,40 @@
+{
+	"name": "ds_csv_territorios",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "blob_gs_rm562987",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gs_562987"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "territorios.csv",
+				"folderPath": "gs_rm562987",
+				"container": "citizentech"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "cod_territorio",
+				"type": "String"
+			},
+			{
+				"name": "nome_territorio",
+				"type": "String"
+			},
+			{
+				"name": "regiao",
+				"type": "String"
+			}
+		]
+	}
+}
