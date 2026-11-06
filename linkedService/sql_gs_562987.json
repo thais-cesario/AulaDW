@@ -1,0 +1,17 @@
+{
+	"name": "sql_gs_562987",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "cp01thais.database.windows.net",
+			"database": "db-citizentech_rm562987",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "CloudSA162046d6",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDg2NjcxMzM2LUVFNkItNDIyNS1CNEM5LTlCMkEyRTU3NjY1Q183NmIwNDM2OC04YjY3LTRmZjYtODc2MS1lNTYzNTIzZDJlODUiDQp9"
+		}
+	}
+}
