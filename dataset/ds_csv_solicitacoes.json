@@ -1,0 +1,56 @@
+{
+	"name": "ds_csv_solicitacoes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "blob_gs_rm562987",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gs_562987"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "solicitacoes.csv",
+				"folderPath": "gs_rm562987",
+				"container": "citizentech"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "id_solicitacao",
+				"type": "String"
+			},
+			{
+				"name": "cod_territorio",
+				"type": "String"
+			},
+			{
+				"name": "cod_servico",
+				"type": "String"
+			},
+			{
+				"name": "cod_canal",
+				"type": "String"
+			},
+			{
+				"name": "dt_abertura",
+				"type": "String"
+			},
+			{
+				"name": "dt_fechamento",
+				"type": "String"
+			},
+			{
+				"name": "status",
+				"type": "String"
+			}
+		]
+	}
+}
