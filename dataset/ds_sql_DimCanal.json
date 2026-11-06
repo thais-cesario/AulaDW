@@ -1,0 +1,33 @@
+{
+	"name": "ds_sql_DimCanal",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_gs_562987",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gs_562987"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sk_canal",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cod_canal",
+				"type": "varchar"
+			},
+			{
+				"name": "nome_canal",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gs_rm562987",
+			"table": "DimCanal"
+		}
+	}
+}
