@@ -221,6 +221,9 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
+				"folder": {
+					"name": "aulas"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -1172,6 +1175,743 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_DimTerritorio')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "gs_rm562987"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_territorios",
+								"type": "DatasetReference"
+							},
+							"name": "territorios"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_DimTerritorio",
+								"type": "DatasetReference"
+							},
+							"name": "snkDimTerritorio"
+						}
+					],
+					"transformations": [
+						{
+							"name": "padroniza"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          cod_territorio as string,",
+						"          nome_territorio as string,",
+						"          regiao as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> territorios",
+						"territorios derive(cod_territorio = upper(trim(cod_territorio)),",
+						"          nome_territorio = trim(nome_territorio),",
+						"          regiao = trim(regiao)) ~> padroniza",
+						"padroniza sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          sk_territorio as integer,",
+						"          cod_territorio as string,",
+						"          nome_territorio as string,",
+						"          regiao as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          cod_territorio,",
+						"          nome_territorio,",
+						"          regiao",
+						"     )) ~> snkDimTerritorio"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_territorios')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_DimTerritorio')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_DimServico')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "gs_rm562987"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_servicos",
+								"type": "DatasetReference"
+							},
+							"name": "srcservicos"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_DimServico",
+								"type": "DatasetReference"
+							},
+							"name": "snkDimServico"
+						}
+					],
+					"transformations": [
+						{
+							"name": "padroniza"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          cod_servico as string,",
+						"          nome_servico as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> srcservicos",
+						"srcservicos derive(cod_servico = upper(trim(cod_servico)),",
+						"          nome_servico = trim(nome_servico)) ~> padroniza",
+						"padroniza sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          sk_servico as integer,",
+						"          cod_servico as string,",
+						"          nome_servico as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          cod_servico,",
+						"          nome_servico",
+						"     )) ~> snkDimServico"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_servicos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_DimServico')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_DimCanal')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "gs_rm562987"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_canais",
+								"type": "DatasetReference"
+							},
+							"name": "srccanais"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_DimCanal",
+								"type": "DatasetReference"
+							},
+							"name": "snkDimCanal"
+						}
+					],
+					"transformations": [
+						{
+							"name": "padroniza"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          cod_canal as string,",
+						"          nome_canal as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> srccanais",
+						"srccanais derive(cod_canal = upper(trim(cod_canal)),",
+						"          nome_canal = trim(nome_canal)) ~> padroniza",
+						"padroniza sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          sk_canal as integer,",
+						"          cod_canal as string,",
+						"          nome_canal as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          cod_canal,",
+						"          nome_canal",
+						"     )) ~> snkDimCanal"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_canais')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_DimCanal')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/teste_gs')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_DimTerritorio",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"territorios": {},
+									"snkDimTerritorio": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Data flow2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_DimServico",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcservicos": {},
+									"snkDimServico": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Data flow3",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_DimCanal",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srccanais": {},
+									"snkDimCanal": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_DimTerritorio')]",
+				"[concat(variables('factoryId'), '/dataflows/df_DimServico')]",
+				"[concat(variables('factoryId'), '/dataflows/df_DimCanal')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_FatoSolicitacao')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "gs_rm562987"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_solicitacoes",
+								"type": "DatasetReference"
+							},
+							"name": "solicitacoes"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_DimTerritorio",
+								"type": "DatasetReference"
+							},
+							"name": "DimTerritorio"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_DimServico",
+								"type": "DatasetReference"
+							},
+							"name": "DimServico"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_DimCanal",
+								"type": "DatasetReference"
+							},
+							"name": "Canal"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_FatoSolicitacao",
+								"type": "DatasetReference"
+							},
+							"name": "FatoSolicitacao"
+						}
+					],
+					"transformations": [
+						{
+							"name": "padroniza"
+						},
+						{
+							"name": "Agregar"
+						},
+						{
+							"name": "tipos"
+						},
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "lookup2"
+						},
+						{
+							"name": "lookup3"
+						},
+						{
+							"name": "medidas"
+						},
+						{
+							"name": "SelectFinal"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id_solicitacao as string,",
+						"          cod_territorio as string,",
+						"          cod_servico as string,",
+						"          cod_canal as string,",
+						"          dt_abertura as string,",
+						"          dt_fechamento as string,",
+						"          status as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> solicitacoes",
+						"source(output(",
+						"          sk_territorio as integer,",
+						"          cod_territorio as string,",
+						"          nome_territorio as string,",
+						"          regiao as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DimTerritorio",
+						"source(output(",
+						"          sk_servico as integer,",
+						"          cod_servico as string,",
+						"          nome_servico as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DimServico",
+						"source(output(",
+						"          sk_canal as integer,",
+						"          cod_canal as string,",
+						"          nome_canal as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> Canal",
+						"solicitacoes derive(id_solicitacao = trim(id_solicitacao),",
+						"          cod_territorio = upper(trim(cod_territorio)),",
+						"          cod_servico = upper(trim(cod_servico)),",
+						"          cod_canal = upper(trim(cod_canal)),",
+						"          dt_abertura = trim(dt_abertura),",
+						"          dt_fechamento = trim(dt_fechamento),",
+						"          status = upper(trim(status))) ~> padroniza",
+						"padroniza aggregate(groupBy(id_solicitacao,",
+						"          cod_territorio,",
+						"          cod_servico,",
+						"          cod_canal,",
+						"          dt_abertura,",
+						"          dt_fechamento,",
+						"          status),",
+						"     qtd_linhas = count()) ~> Agregar",
+						"Agregar derive(id_solicitacao = toInteger(id_solicitacao),",
+						"          dt_abertura = toTimestamp(dt_abertura, 'yyyy-MM-dd HH:mm:ss'),",
+						"          dt_fechamento = iif(isNull(dt_fechamento) || dt_fechamento=='', toTimestamp(null()), toTimestamp(dt_fechamento, 'yyyy-MM-dd HH:mm:ss'))) ~> tipos",
+						"medidas, DimTerritorio lookup(Agregar@cod_territorio == DimTerritorio@cod_territorio,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1, DimServico lookup(Agregar@cod_servico == DimServico@cod_servico,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup2",
+						"lookup2, Canal lookup(Agregar@cod_canal == Canal@cod_canal,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup3",
+						"tipos derive(data_key = toInteger(toString(dt_abertura, 'yyyyMMdd')),",
+						"          qtd_solicitacoes = 1,",
+						"          tempo_resolucao_horas = iif(status=='CONCLUIDO', toDecimal(round((toLong(dt_fechamento)-toLong(dt_abertura))/3600000.0, 2), 12, 2), toDecimal(null(), 12, 2))) ~> medidas",
+						"lookup3 select(mapColumn(",
+						"          id_solicitacao,",
+						"          sk_territorio,",
+						"          sk_servico,",
+						"          sk_canal,",
+						"          data_key,",
+						"          dt_abertura,",
+						"          dt_fechamento,",
+						"          status,",
+						"          qtd_solicitacoes,",
+						"          tempo_resolucao_horas",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectFinal",
+						"SelectFinal sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          sk_fato_solicitacao as long,",
+						"          id_solicitacao as integer,",
+						"          sk_territorio as integer,",
+						"          sk_servico as integer,",
+						"          sk_canal as integer,",
+						"          data_key as integer,",
+						"          dt_abertura as timestamp,",
+						"          dt_fechamento as timestamp,",
+						"          status as string,",
+						"          qtd_solicitacoes as integer,",
+						"          tempo_resolucao_horas as decimal(12,2)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          id_solicitacao,",
+						"          sk_territorio,",
+						"          sk_servico,",
+						"          sk_canal,",
+						"          data_key,",
+						"          dt_abertura,",
+						"          dt_fechamento,",
+						"          status,",
+						"          qtd_solicitacoes,",
+						"          tempo_resolucao_horas",
+						"     )) ~> FatoSolicitacao"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_solicitacoes')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_DimTerritorio')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_DimServico')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_DimCanal')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_FatoSolicitacao')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_gs_rm562987')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "sp_PrepararCarga",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[gs_rm562987].[usp_PrepararCarga]"
+						},
+						"linkedServiceName": {
+							"referenceName": "sql_gs_562987",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "df_DimTerritorio",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "sp_PrepararCarga",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_DimTerritorio",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"territorios": {},
+									"snkDimTerritorio": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_DimServico",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "sp_PrepararCarga",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_DimServico",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcservicos": {},
+									"snkDimServico": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_DimCanal",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "sp_PrepararCarga",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_DimCanal",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srccanais": {},
+									"snkDimCanal": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_FatoSolicitacao",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "df_DimServico",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "df_DimCanal",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "df_DimTerritorio",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_FatoSolicitacao",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"solicitacoes": {},
+									"DimTerritorio": {},
+									"DimServico": {},
+									"Canal": {},
+									"FatoSolicitacao": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "gs_rm562987"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_gs_562987')]",
+				"[concat(variables('factoryId'), '/dataflows/df_DimTerritorio')]",
+				"[concat(variables('factoryId'), '/dataflows/df_DimServico')]",
+				"[concat(variables('factoryId'), '/dataflows/df_DimCanal')]",
+				"[concat(variables('factoryId'), '/dataflows/df_FatoSolicitacao')]"
 			]
 		}
 	]
