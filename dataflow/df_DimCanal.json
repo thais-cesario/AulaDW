@@ -1,0 +1,37 @@
+{
+	"name": "df_DimCanal",
+	"properties": {
+		"folder": {
+			"name": "gs_rm562987"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_csv_canais",
+						"type": "DatasetReference"
+					},
+					"name": "srccanais"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "padroniza"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          cod_canal as string,",
+				"          nome_canal as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srccanais",
+				"srccanais derive(cod_canal = upper(trim(cod_canal)),",
+				"          nome_canal = trim(nome_canal)) ~> padroniza"
+			]
+		}
+	}
+}
