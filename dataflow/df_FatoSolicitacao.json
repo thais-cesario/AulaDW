@@ -1,0 +1,200 @@
+{
+	"name": "df_FatoSolicitacao",
+	"properties": {
+		"folder": {
+			"name": "gs_rm562987"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_csv_solicitacoes",
+						"type": "DatasetReference"
+					},
+					"name": "solicitacoes"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_DimTerritorio",
+						"type": "DatasetReference"
+					},
+					"name": "DimTerritorio"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_DimServico",
+						"type": "DatasetReference"
+					},
+					"name": "DimServico"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_DimCanal",
+						"type": "DatasetReference"
+					},
+					"name": "Canal"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_FatoSolicitacao",
+						"type": "DatasetReference"
+					},
+					"name": "FatoSolicitacao"
+				}
+			],
+			"transformations": [
+				{
+					"name": "padroniza"
+				},
+				{
+					"name": "Agregar"
+				},
+				{
+					"name": "tipos"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "lookup2"
+				},
+				{
+					"name": "lookup3"
+				},
+				{
+					"name": "medidas"
+				},
+				{
+					"name": "SelectFinal"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_solicitacao as string,",
+				"          cod_territorio as string,",
+				"          cod_servico as string,",
+				"          cod_canal as string,",
+				"          dt_abertura as string,",
+				"          dt_fechamento as string,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> solicitacoes",
+				"source(output(",
+				"          sk_territorio as integer,",
+				"          cod_territorio as string,",
+				"          nome_territorio as string,",
+				"          regiao as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimTerritorio",
+				"source(output(",
+				"          sk_servico as integer,",
+				"          cod_servico as string,",
+				"          nome_servico as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimServico",
+				"source(output(",
+				"          sk_canal as integer,",
+				"          cod_canal as string,",
+				"          nome_canal as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Canal",
+				"solicitacoes derive(id_solicitacao = trim(id_solicitacao),",
+				"          cod_territorio = upper(trim(cod_territorio)),",
+				"          cod_servico = upper(trim(cod_servico)),",
+				"          cod_canal = upper(trim(cod_canal)),",
+				"          dt_abertura = trim(dt_abertura),",
+				"          dt_fechamento = trim(dt_fechamento),",
+				"          status = upper(trim(status))) ~> padroniza",
+				"padroniza aggregate(groupBy(id_solicitacao,",
+				"          cod_territorio,",
+				"          cod_servico,",
+				"          cod_canal,",
+				"          dt_abertura,",
+				"          dt_fechamento,",
+				"          status),",
+				"     qtd_linhas = count()) ~> Agregar",
+				"Agregar derive(id_solicitacao = toInteger(id_solicitacao),",
+				"          dt_abertura = toTimestamp(dt_abertura, 'yyyy-MM-dd HH:mm:ss'),",
+				"          dt_fechamento = iif(isNull(dt_fechamento) || dt_fechamento=='', toTimestamp(null()), toTimestamp(dt_fechamento, 'yyyy-MM-dd HH:mm:ss'))) ~> tipos",
+				"medidas, DimTerritorio lookup(Agregar@cod_territorio == DimTerritorio@cod_territorio,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1, DimServico lookup(Agregar@cod_servico == DimServico@cod_servico,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup2",
+				"lookup2, Canal lookup(Agregar@cod_canal == Canal@cod_canal,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup3",
+				"tipos derive(data_key = toInteger(toString(dt_abertura, 'yyyyMMdd')),",
+				"          qtd_solicitacoes = 1,",
+				"          tempo_resolucao_horas = iif(status=='CONCLUIDO', toDecimal(round((toLong(dt_fechamento)-toLong(dt_abertura))/3600000.0, 2), 12, 2), toDecimal(null(), 12, 2))) ~> medidas",
+				"lookup3 select(mapColumn(",
+				"          id_solicitacao,",
+				"          sk_territorio,",
+				"          sk_servico,",
+				"          sk_canal,",
+				"          data_key,",
+				"          dt_abertura,",
+				"          dt_fechamento,",
+				"          status,",
+				"          qtd_solicitacoes,",
+				"          tempo_resolucao_horas",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectFinal",
+				"SelectFinal sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          sk_fato_solicitacao as long,",
+				"          id_solicitacao as integer,",
+				"          sk_territorio as integer,",
+				"          sk_servico as integer,",
+				"          sk_canal as integer,",
+				"          data_key as integer,",
+				"          dt_abertura as timestamp,",
+				"          dt_fechamento as timestamp,",
+				"          status as string,",
+				"          qtd_solicitacoes as integer,",
+				"          tempo_resolucao_horas as decimal(12,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id_solicitacao,",
+				"          sk_territorio,",
+				"          sk_servico,",
+				"          sk_canal,",
+				"          data_key,",
+				"          dt_abertura,",
+				"          dt_fechamento,",
+				"          status,",
+				"          qtd_solicitacoes,",
+				"          tempo_resolucao_horas",
+				"     )) ~> FatoSolicitacao"
+			]
+		}
+	}
+}
