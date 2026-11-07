@@ -1,0 +1,64 @@
+{
+	"name": "df_DimServico",
+	"properties": {
+		"folder": {
+			"name": "gs_rm562987"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_csv_servicos",
+						"type": "DatasetReference"
+					},
+					"name": "srcservicos"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_DimServico",
+						"type": "DatasetReference"
+					},
+					"name": "snkDimServico"
+				}
+			],
+			"transformations": [
+				{
+					"name": "padroniza"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          cod_servico as string,",
+				"          nome_servico as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcservicos",
+				"srcservicos derive(cod_servico = upper(trim(cod_servico)),",
+				"          nome_servico = trim(nome_servico)) ~> padroniza",
+				"padroniza sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          sk_servico as integer,",
+				"          cod_servico as string,",
+				"          nome_servico as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          cod_servico,",
+				"          nome_servico",
+				"     )) ~> snkDimServico"
+			]
+		}
+	}
+}
