@@ -1,0 +1,68 @@
+{
+	"name": "df_DimTerritorio",
+	"properties": {
+		"folder": {
+			"name": "gs_rm562987"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_csv_territorios",
+						"type": "DatasetReference"
+					},
+					"name": "territorios"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_DimTerritorio",
+						"type": "DatasetReference"
+					},
+					"name": "snkDimTerritorio"
+				}
+			],
+			"transformations": [
+				{
+					"name": "padroniza"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          cod_territorio as string,",
+				"          nome_territorio as string,",
+				"          regiao as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> territorios",
+				"territorios derive(cod_territorio = upper(trim(cod_territorio)),",
+				"          nome_territorio = trim(nome_territorio),",
+				"          regiao = trim(regiao)) ~> padroniza",
+				"padroniza sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          sk_territorio as integer,",
+				"          cod_territorio as string,",
+				"          nome_territorio as string,",
+				"          regiao as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          cod_territorio,",
+				"          nome_territorio,",
+				"          regiao",
+				"     )) ~> snkDimTerritorio"
+			]
+		}
+	}
+}
