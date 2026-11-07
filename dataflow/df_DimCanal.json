@@ -15,7 +15,15 @@
 					"name": "srccanais"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_DimCanal",
+						"type": "DatasetReference"
+					},
+					"name": "snkDimCanal"
+				}
+			],
 			"transformations": [
 				{
 					"name": "padroniza"
@@ -30,7 +38,26 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> srccanais",
 				"srccanais derive(cod_canal = upper(trim(cod_canal)),",
-				"          nome_canal = trim(nome_canal)) ~> padroniza"
+				"          nome_canal = trim(nome_canal)) ~> padroniza",
+				"padroniza sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          sk_canal as integer,",
+				"          cod_canal as string,",
+				"          nome_canal as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          cod_canal,",
+				"          nome_canal",
+				"     )) ~> snkDimCanal"
 			]
 		}
 	}
